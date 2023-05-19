@@ -75,21 +75,60 @@ const spin = () => {
         }
     }
 
-    const reels = [[], [], []];
-    for (i = 0; i < COLS; i++) {
+    const reels = [];
+    for (i = 0; i < ROWS; i++) {
         const reelSymbols = [...symbols];
-        for (j = 0; j < ROWS; j++) {
+        for (j = 0; j < COLS; j++) {
+            if (i == 0){
+                reels.push([]);
+            }
             const randomIndex = Math.floor(Math.random()*reelSymbols.length);
             const selectedSymbol = reelSymbols[randomIndex];
-            reels[i].push(selectedSymbol);
+            reels[j].push(selectedSymbol);
             reelSymbols.slice(randomIndex, 1);
         }
     }
 
     return reels;
  };
-const reels = spin();
-console.log(reels);
+
+const printRows = (rows) => {
+    for (row of rows) {
+        let rowString = "";
+        for (const [i, symbol] of row.entries()) {
+            rowString += symbol;
+            if (i != row.length - 1){
+                rowString += " | ";
+            }
+        }
+        console.log(rowString);
+    }
+};
+
+const getWinnings = (rows, lines, bet) => {
+    let winnings = 0;
+    for (i = 0; i < lines; i ++) {
+        const row = rows[0];
+        let won = true;
+        for (const [i, symbol] of row.entries()){
+            if (symbol != row[0]){
+                won = false;
+                continue;
+            }
+        }
+        if (won){
+            winnings += bet * SYMBOLS_VALUES[row[0]];
+        }
+        console.log(row[0]);
+    }
+    return winnings;
+}
+
+
 let balance = deposit();
 const numberOfLines = getNumberOfLines();
 const bet = getBet(balance, numberOfLines);
+const reels = spin();
+printRows(reels);
+const wonAmount = getWinnings(reels, numberOfLines, bet);
+console.log(wonAmount);
