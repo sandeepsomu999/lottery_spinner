@@ -108,7 +108,7 @@ const printRows = (rows) => {
 const getWinnings = (rows, lines, bet) => {
     let winnings = 0;
     for (i = 0; i < lines; i ++) {
-        const row = rows[0];
+        const row = rows[i];
         let won = true;
         for (const [i, symbol] of row.entries()){
             if (symbol != row[0]){
@@ -119,16 +119,28 @@ const getWinnings = (rows, lines, bet) => {
         if (won){
             winnings += bet * SYMBOLS_VALUES[row[0]];
         }
-        console.log(row[0]);
     }
     return winnings;
 }
 
 
 let balance = deposit();
-const numberOfLines = getNumberOfLines();
-const bet = getBet(balance, numberOfLines);
-const reels = spin();
-printRows(reels);
-const wonAmount = getWinnings(reels, numberOfLines, bet);
-console.log(wonAmount);
+
+while(true){
+    if (balance <= 0) {
+        console.log("You ran out of money");
+        break;
+    }
+    console.log("you have a balance of $ ," + balance.toString());
+    const numberOfLines = getNumberOfLines();
+    const bet = getBet(balance, numberOfLines);
+    balance -= numberOfLines*bet;
+    const reels = spin();
+    printRows(reels);
+    const wonAmount = getWinnings(reels, numberOfLines, bet);
+    balance += wonAmount;
+    console.log("You won, $ " + wonAmount.toString());
+
+    const playAgain = prompt("Do you want to play again (y/n)? ");
+    if (playAgain != "y") break;
+}
